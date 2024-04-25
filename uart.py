@@ -16,3 +16,33 @@ if(getPort()!="None"):
     ser = serial.Serial( port=getPort(), baudrate=115200)
     print(ser)
 
+def processData(client, data):
+    data = data.replace("!", "")
+    data = data.replace("#", "")
+    splitData = data.split(":")
+    print(splitData)
+    if splitData[1] == "T":
+        #print("Yes")
+        client.publish(AIO_FEED_SENSOR[0], splitData[2])
+    elif splitData[1]=="H" :
+        #print("Yes")
+        client.publish(AIO_FEED_SENSOR[1], splitData[2])
+    elif splitData[1]=="L" :
+        #print("Yes")
+        client.publish(AIO_FEED_SENSOR[2], splitData[2])
+
+
+mess = ""
+def readSerial(client):
+    bytesToRead = ser.inWaiting()
+    if (bytesToRead > 0):
+        global mess
+        mess = mess + ser.read(bytesToRead).decode("UTF-8")
+        while ("#" in mess) and ("!" in mess):
+            start = mess.find("!")
+            end = mess.find("#")
+            processData(client, mess[start:end + 1])
+            if (end == len(mess)):
+                mess = ""
+            else:
+                mess = mess[end+1:]
