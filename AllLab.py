@@ -3,6 +3,7 @@ from Adafruit_IO import MQTTClient
 import time
 import random
 from simpleAI import *
+from uart import *
 AIO_AI_FEED=""
 AIO_FEED_ID = ["",""]
 AIO_USERNAME = ""
@@ -68,5 +69,6 @@ while True:
             finalResult= ai_result[0] + " \nWith confidence score " + ai_result[1]
             #print(finalResult)
             client.publish(AIO_AI_FEED,finalResult)
+    readSerial(client)
     time.sleep(1)
     pass
